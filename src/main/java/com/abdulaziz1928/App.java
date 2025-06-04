@@ -26,7 +26,7 @@ public class App {
                                         new AddressCondition(MatchType.IS, AddressPart.DOMAIN, List.of("from"), List.of("home.org")),
                                         new TrueCondition()
                                 ))
-                        .actions(List.of(new FileIntoAction("Sent"),new VacationAction(1,"abc","user1@home.org",null,null,null,"abc")))
+                        .actions(List.of(new FileIntoAction("Sent"), new VacationAction(1, "abc", "user1@home.org", null, null, null, "abc")))
                         .build())
                 .build());
         System.out.println(sieveFilter.generateScript());

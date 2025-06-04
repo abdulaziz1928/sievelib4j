@@ -9,7 +9,6 @@ import java.util.Objects;
 @Getter
 public abstract class AbstractAddressCondition extends SieveCondition {
     private final AddressPart addressPart;
-
     private final MatchType matchType;
 
     protected AbstractAddressCondition(AddressPart addressPart, MatchType matchType) {

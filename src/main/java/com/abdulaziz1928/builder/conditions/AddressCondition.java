@@ -4,7 +4,6 @@ import com.abdulaziz1928.builder.types.AddressPart;
 import com.abdulaziz1928.builder.types.MatchType;
 import lombok.Getter;
 
-
 import java.util.List;
 
 @Getter

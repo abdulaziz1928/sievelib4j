@@ -22,6 +22,7 @@ public class SieveArgument implements Writable {
         items.add(new StringList(s));
         return this;
     }
+
     public SieveArgument writeConditionBlock(String name, SieveArgument condition, List<SieveArgument> actions) {
         items.add(new ConditionalBlock(name, condition, actions));
         return this;

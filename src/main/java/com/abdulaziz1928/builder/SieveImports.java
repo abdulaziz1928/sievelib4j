@@ -2,6 +2,7 @@ package com.abdulaziz1928.builder;
 
 public enum SieveImports {
     ;
+
     public static class Conditions {
         public static final String ENVELOPE = "envelope";
         public static final String BODY = "body";

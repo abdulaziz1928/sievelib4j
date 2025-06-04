@@ -27,7 +27,7 @@ public class SieveFilterSet {
     private String generateFilters() throws IOException {
         var filterValue = "";
         for (var filter : filterSet)
-            filterValue = filterValue.concat(filter.generateScript());
+            filterValue = filterValue.concat("\n").concat(filter.generateScript());
 
         return filterValue;
     }

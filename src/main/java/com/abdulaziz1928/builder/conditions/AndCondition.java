@@ -11,11 +11,12 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Builder
-public class AndCondition extends SieveCondition{
+public class AndCondition extends SieveCondition {
     List<SieveCondition> conditions;
-    public AndCondition(SieveCondition... conditions){
-        if(conditions.length <=1)
+
+    public AndCondition(SieveCondition... conditions) {
+        if (conditions.length <= 1)
             throw new IllegalArgumentException();
-        this.conditions= Arrays.stream(conditions).toList();
+        this.conditions = Arrays.stream(conditions).toList();
     }
 }

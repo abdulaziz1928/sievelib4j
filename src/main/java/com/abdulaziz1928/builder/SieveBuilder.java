@@ -2,11 +2,12 @@ package com.abdulaziz1928.builder;
 
 import com.abdulaziz1928.builder.actions.*;
 import com.abdulaziz1928.builder.conditions.*;
-import com.abdulaziz1928.builder.control.*;
-
+import com.abdulaziz1928.builder.control.ControlElse;
+import com.abdulaziz1928.builder.control.ControlElseIf;
+import com.abdulaziz1928.builder.control.ControlIf;
+import com.abdulaziz1928.builder.control.ControlRequire;
 import lombok.Builder;
 import lombok.Getter;
-
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -137,6 +138,7 @@ public class SieveBuilder {
         applyCopy(args, redirectAction.isCopy());
         return args.writeString(redirectAction.getAddress());
     }
+
     private SieveArgument keep() {
         return new SieveArgument().writeAtom("keep");
     }

@@ -12,9 +12,4 @@ public enum MatchType {
             case MATCHES -> ":matches";
         };
     }
-
-    public String getSyntax(String comparator) {
-        var match = getSyntax();
-        return match.concat(String.format(" \"%s\"", comparator));
-    }
 }

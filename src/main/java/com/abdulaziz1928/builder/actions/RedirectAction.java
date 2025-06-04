@@ -9,7 +9,7 @@ public class RedirectAction extends SieveAction {
     final String address;
     final boolean copy;
 
-    RedirectAction(String address) {
+    public RedirectAction(String address) {
         this.address = address;
         this.copy = false;
     }

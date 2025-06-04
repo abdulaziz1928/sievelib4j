@@ -5,8 +5,8 @@ public enum SizeType {
     OVER,
     ;
 
-    public String getSyntax(){
-        return switch (this){
+    public String getSyntax() {
+        return switch (this) {
             case OVER -> ":over";
             case UNDER -> ":under";
         };
