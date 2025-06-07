@@ -9,7 +9,7 @@ import java.util.Set;
 
 @AllArgsConstructor
 @Getter
-public class ControlRequire {
+public final class ControlRequire {
     private final Set<String> capabilities = new HashSet<>();
 
     public void addCapability(String capability) {

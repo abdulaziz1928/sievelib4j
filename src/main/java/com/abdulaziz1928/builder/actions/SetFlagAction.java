@@ -4,6 +4,10 @@ import java.util.List;
 
 public class SetFlagAction extends AbstractFlagAction {
     public SetFlagAction(List<String> flags) {
-        super(flags);
+        this(null, flags);
+    }
+
+    public SetFlagAction(String variableName, List<String> flags) {
+        super(variableName, flags);
     }
 }

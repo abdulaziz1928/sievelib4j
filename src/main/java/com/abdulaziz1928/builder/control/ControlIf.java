@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
-public class ControlIf extends SieveControl {
+public final class ControlIf extends SieveControl {
     private final SieveCondition condition;
     private final List<SieveAction> actions;
 

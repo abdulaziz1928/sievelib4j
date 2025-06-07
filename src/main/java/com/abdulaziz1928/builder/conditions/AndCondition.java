@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Builder
 public class AndCondition extends SieveCondition {
-    List<SieveCondition> conditions;
+    private final List<SieveCondition> conditions;
 
     public AndCondition(SieveCondition... conditions) {
         if (conditions.length <= 1)

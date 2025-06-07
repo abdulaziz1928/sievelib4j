@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
-public class ControlElse extends SieveControl {
+public final class ControlElse extends SieveControl {
     private final List<SieveAction> actions;
 
     @Builder

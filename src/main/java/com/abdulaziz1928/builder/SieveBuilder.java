@@ -6,12 +6,17 @@ import com.abdulaziz1928.builder.control.ControlElse;
 import com.abdulaziz1928.builder.control.ControlElseIf;
 import com.abdulaziz1928.builder.control.ControlIf;
 import com.abdulaziz1928.builder.control.ControlRequire;
+import com.abdulaziz1928.builder.types.Comparator;
+import com.abdulaziz1928.builder.types.MatchType;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import static com.abdulaziz1928.builder.SieveImports.Actions;
 import static com.abdulaziz1928.builder.SieveImports.Conditions;
@@ -84,16 +89,16 @@ public class SieveBuilder {
             return fileInto(fileIntoAction);
         else if (action instanceof RedirectAction redirectAction)
             return redirect(redirectAction);
-        else if (action instanceof KeepAction)
-            return keep();
+        else if (action instanceof KeepAction keepAction)
+            return keep(keepAction);
         else if (action instanceof DiscardAction)
             return discard();
         else if (action instanceof VacationAction vacationAction)
             return vacation(vacationAction);
         else if (action instanceof AddFlagAction addFlagAction)
             return addFlag(addFlagAction);
-        else if (action instanceof DeleteFlagAction deleteFlagAction)
-            return deleteFlag(deleteFlagAction);
+        else if (action instanceof RemoveFlagAction removeFlagAction)
+            return removeFlag(removeFlagAction);
         else if (action instanceof SetFlagAction setFlagAction)
             return setFlag(setFlagAction);
 
@@ -101,18 +106,25 @@ public class SieveBuilder {
     }
 
     private SieveArgument addFlag(AddFlagAction addFlagAction) {
-        applyImport(SieveImports.Actions.IMAP4FLAGS);
-        return new SieveArgument().writeAtom("addflag").writeStringList(addFlagAction.getFlags());
+        return flag(addFlagAction, "addflag");
     }
 
     private SieveArgument setFlag(SetFlagAction setFlagAction) {
-        applyImport(Actions.IMAP4FLAGS);
-        return new SieveArgument().writeAtom("setflag").writeStringList(setFlagAction.getFlags());
+        return flag(setFlagAction, "setflag");
     }
 
-    private SieveArgument deleteFlag(DeleteFlagAction deleteFlagAction) {
+    private SieveArgument removeFlag(RemoveFlagAction removeFlagAction) {
+        return flag(removeFlagAction, "removeflag");
+    }
+
+    private SieveArgument flag(AbstractFlagAction flagAction, String name) {
         applyImport(Actions.IMAP4FLAGS);
-        return new SieveArgument().writeAtom("removeflag").writeStringList(deleteFlagAction.getFlags());
+        var args = new SieveArgument().writeAtom(name);
+
+        if (Objects.nonNull(flagAction.getVariableName()))
+            args.writeString(flagAction.getVariableName());
+
+        return args.writeStringList(flagAction.getFlags());
     }
 
 
@@ -123,21 +135,32 @@ public class SieveBuilder {
         }
     }
 
-    private SieveArgument fileInto(FileIntoAction fileIntoAction) {
-        applyImport(Actions.FILE_INTO);
-        var args = new SieveArgument().writeAtom("fileinto");
-        applyCopy(args, fileIntoAction.isCopy());
-        return args.writeString(fileIntoAction.getMailbox());
-    }
-
     private SieveArgument redirect(RedirectAction redirectAction) {
         var args = new SieveArgument().writeAtom("redirect");
         applyCopy(args, redirectAction.isCopy());
         return args.writeString(redirectAction.getAddress());
     }
 
-    private SieveArgument keep() {
-        return new SieveArgument().writeAtom("keep");
+    private SieveArgument fileInto(FileIntoAction fileIntoAction) {
+        applyImport(Actions.FILE_INTO);
+        var args = new SieveArgument().writeAtom("fileinto");
+        applyFlags(args, fileIntoAction.getFlagsVariableName(), fileIntoAction.getFlags());
+        applyCopy(args, fileIntoAction.isCopy());
+        return args.writeString(fileIntoAction.getMailbox());
+    }
+
+    private SieveArgument keep(KeepAction keepAction) {
+        var args = new SieveArgument().writeAtom("keep");
+        applyFlags(args, keepAction.getFlagsVariableName(), keepAction.getFlags());
+        return args;
+    }
+
+    private void applyFlags(SieveArgument args, String flagVariable, List<String> flags) {
+        if (Objects.nonNull(flagVariable)) {
+            args.writeAtom(":flags").writeString("${%s}".formatted(flagVariable));
+        } else if (Objects.nonNull(flags) && !flags.isEmpty()) {
+            args.writeAtom(":flags").writeStringList(flags);
+        }
     }
 
     private SieveArgument discard() {
@@ -146,8 +169,8 @@ public class SieveBuilder {
 
     private SieveArgument vacation(VacationAction vacationAction) {
         applyImport(Actions.VACATION);
-        var args = new SieveArgument();
-        args.writeAtom("vacation");
+        var args = new SieveArgument().writeAtom("vacation");
+
         if (Objects.nonNull(vacationAction.getDays()))
             args.writeAtom(":days").writeNumber(vacationAction.getDays());
 
@@ -186,6 +209,8 @@ public class SieveBuilder {
             return size(sizeCondition);
         else if (condition instanceof ExistsCondition existsCondition)
             return exists(existsCondition);
+        else if (condition instanceof HasFlagCondition hasFlagCondition)
+            return hasFlag(hasFlagCondition);
         else if (condition instanceof TrueCondition)
             return _True();
         else if (condition instanceof FalseCondition)
@@ -214,14 +239,24 @@ public class SieveBuilder {
         return new SieveArgument().writeAtom("not").appendArgument(condition);
     }
 
+    private SieveArgument hasFlag(HasFlagCondition hasFlagCondition) {
+        applyImport(Actions.IMAP4FLAGS);
+        var args = new SieveArgument().writeAtom("hasflag");
+
+        applyMatchType(args, hasFlagCondition.getMatchType());
+        applyComparator(args, hasFlagCondition.getComparator());
+
+        if (Objects.nonNull(hasFlagCondition.getVariables()) && !hasFlagCondition.getVariables().isEmpty())
+            args.writeStringList(hasFlagCondition.getVariables());
+
+        return args.writeStringList(hasFlagCondition.getFlags());
+    }
+
     private SieveArgument header(HeaderCondition headerCondition) {
         var args = new SieveArgument().writeAtom("header");
 
-        if (Objects.nonNull(headerCondition.getComparator()))
-            args.writeAtom(":comparator").writeString(headerCondition.getComparator().getName());
-
-        if (Objects.nonNull(headerCondition.getMatchType()))
-            args.writeAtom(headerCondition.getMatchType().getSyntax());
+        applyComparator(args, headerCondition.getComparator());
+        applyMatchType(args, headerCondition.getMatchType());
 
         return args
                 .writeStringList(headerCondition.getHeaders())
@@ -232,14 +267,12 @@ public class SieveBuilder {
         applyImport(Conditions.ENVELOPE);
         var args = new SieveArgument().writeAtom("envelope");
 
-        if (Objects.nonNull((envelopeCondition.getComparator())))
-            args.writeAtom(":comparator").writeString(envelopeCondition.getComparator().getName());
+        applyComparator(args, envelopeCondition.getComparator());
 
         if (Objects.nonNull(envelopeCondition.getAddressPart()))
             args.writeAtom(envelopeCondition.getAddressPart().getSyntax());
 
-        if (Objects.nonNull(envelopeCondition.getMatchType()))
-            args.writeAtom(envelopeCondition.getMatchType().getSyntax());
+        applyMatchType(args, envelopeCondition.getMatchType());
 
         return args
                 .writeStringList(envelopeCondition.getEnvelopeParts())
@@ -248,20 +281,31 @@ public class SieveBuilder {
 
     private SieveArgument address(AddressCondition addressCondition) {
         var args = new SieveArgument().writeAtom("address");
-        if (Objects.nonNull(addressCondition.getComparator()))
-            args.writeAtom(":comparator").writeString(addressCondition.getComparator().getName());
+
+        applyComparator(args, addressCondition.getComparator());
 
         if (Objects.nonNull(addressCondition.getAddressPart()))
             args.writeAtom(addressCondition.getAddressPart().getSyntax());
 
-        if (Objects.nonNull(addressCondition.getMatchType()))
-            args.writeAtom(addressCondition.getMatchType().getSyntax());
+        applyMatchType(args, addressCondition.getMatchType());
+
 
         return args
                 .writeStringList(addressCondition.getHeaders())
                 .writeStringList(addressCondition.getKeys());
 
     }
+
+    private static void applyComparator(SieveArgument args, Comparator comparator) {
+        if (Objects.nonNull((comparator)))
+            args.writeAtom(":comparator").writeString(comparator.getName());
+    }
+
+    private static void applyMatchType(SieveArgument args, MatchType matchType) {
+        if (Objects.nonNull(matchType))
+            args.writeAtom(matchType.getSyntax());
+    }
+
 
     private SieveArgument size(SizeCondition sizeCondition) {
         return new SieveArgument()

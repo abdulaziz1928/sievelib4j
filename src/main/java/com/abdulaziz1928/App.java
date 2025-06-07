@@ -3,6 +3,7 @@ package com.abdulaziz1928;
 import com.abdulaziz1928.builder.SieveBuilder;
 import com.abdulaziz1928.builder.SieveFilterSet;
 import com.abdulaziz1928.builder.actions.DiscardAction;
+import com.abdulaziz1928.builder.actions.FileIntoAction;
 import com.abdulaziz1928.builder.actions.SetFlagAction;
 import com.abdulaziz1928.builder.actions.VacationAction;
 import com.abdulaziz1928.builder.conditions.AddressCondition;
@@ -29,7 +30,8 @@ public class App {
                                         new TrueCondition()
                                 ))
                         .actions(List.of(
-                                new SetFlagAction(List.of("\\Seen")),
+                                new SetFlagAction("myVar", List.of("\\Seen")),
+                                new FileIntoAction("Inbox", true, "myVar"),
                                 new VacationAction(1, "abc", "user1@home.org", null, null, null, "abc")))
                         .build())
                 .elseStatement(ControlElse.builder().actions(List.of(new DiscardAction())).build())

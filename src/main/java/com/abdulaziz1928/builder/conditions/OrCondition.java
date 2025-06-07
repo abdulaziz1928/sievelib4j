@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class OrCondition extends SieveCondition {
-    List<SieveCondition> conditions;
+    private final List<SieveCondition> conditions;
 
     public OrCondition(SieveCondition... conditions) {
         if (conditions.length <= 1)
