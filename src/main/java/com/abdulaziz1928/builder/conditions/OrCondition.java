@@ -14,7 +14,7 @@ public class OrCondition extends SieveCondition {
 
     public OrCondition(SieveCondition... conditions) {
         if (conditions.length <= 1)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("more than one condition must be provided");
         this.conditions = Arrays.stream(conditions).toList();
     }
 }

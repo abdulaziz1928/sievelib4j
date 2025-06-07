@@ -2,11 +2,13 @@ package com.abdulaziz1928;
 
 import com.abdulaziz1928.builder.SieveBuilder;
 import com.abdulaziz1928.builder.SieveFilterSet;
-import com.abdulaziz1928.builder.actions.FileIntoAction;
+import com.abdulaziz1928.builder.actions.DiscardAction;
+import com.abdulaziz1928.builder.actions.SetFlagAction;
 import com.abdulaziz1928.builder.actions.VacationAction;
 import com.abdulaziz1928.builder.conditions.AddressCondition;
 import com.abdulaziz1928.builder.conditions.AndCondition;
 import com.abdulaziz1928.builder.conditions.TrueCondition;
+import com.abdulaziz1928.builder.control.ControlElse;
 import com.abdulaziz1928.builder.control.ControlIf;
 import com.abdulaziz1928.builder.types.AddressPart;
 import com.abdulaziz1928.builder.types.MatchType;
@@ -26,8 +28,11 @@ public class App {
                                         new AddressCondition(MatchType.IS, AddressPart.DOMAIN, List.of("from"), List.of("home.org")),
                                         new TrueCondition()
                                 ))
-                        .actions(List.of(new FileIntoAction("Sent"), new VacationAction(1, "abc", "user1@home.org", null, null, null, "abc")))
+                        .actions(List.of(
+                                new SetFlagAction(List.of("\\Seen")),
+                                new VacationAction(1, "abc", "user1@home.org", null, null, null, "abc")))
                         .build())
+                .elseStatement(ControlElse.builder().actions(List.of(new DiscardAction())).build())
                 .build());
         System.out.println(sieveFilter.generateScript());
     }

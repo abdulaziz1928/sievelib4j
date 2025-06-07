@@ -27,7 +27,7 @@ public class SieveFilterSet {
     private String generateFilters() throws IOException {
         var filterValue = "";
         for (var filter : filterSet)
-            filterValue = filterValue.concat("\n").concat(filter.generateScript());
+            filterValue = filterValue.concat("\r\n").concat(filter.generateScript());
 
         return filterValue;
     }
@@ -43,7 +43,7 @@ public class SieveFilterSet {
         if (imports.isEmpty())
             return "";
         var capabilities = getListAsString(imports);
-        return String.format("require %s;\n", capabilities);
+        return String.format("require %s;\r\n", capabilities);
     }
 
     static String getListAsString(List<String> list) {

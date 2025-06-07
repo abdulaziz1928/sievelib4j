@@ -11,9 +11,7 @@ import lombok.Getter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.abdulaziz1928.builder.SieveImports.Actions;
 import static com.abdulaziz1928.builder.SieveImports.Conditions;
@@ -31,7 +29,7 @@ public class SieveBuilder {
 
     public String generateScript() throws IOException {
         var args = new SieveArgument();
-        if (id != null) {
+        if (Objects.nonNull(id)) {
             args.appendArgument(filterId(id));
         }
         args.appendArgument(ifCondition(ifStatement));
@@ -40,7 +38,7 @@ public class SieveBuilder {
             for (var statement : elseIfStatements)
                 args.appendArgument(elseIfCondition(statement));
 
-        if (elseStatement != null)
+        if (Objects.nonNull(elseStatement))
             args.appendArgument(elseCondition(elseStatement));
 
         var os = new ByteArrayOutputStream();
@@ -49,8 +47,7 @@ public class SieveBuilder {
     }
 
     private SieveArgument filterId(UUID id) {
-        var args = new SieveArgument();
-        return args.writeAtom(String.format("# Filter: %s\n", id));
+        return new SieveArgument().writeAtom(String.format("# Filter: %s\r\n", id));
     }
 
     private SieveArgument ifCondition(ControlIf ifStatement) {
@@ -100,7 +97,7 @@ public class SieveBuilder {
         else if (action instanceof SetFlagAction setFlagAction)
             return setFlag(setFlagAction);
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("action not supported");
     }
 
     private SieveArgument addFlag(AddFlagAction addFlagAction) {
@@ -151,28 +148,25 @@ public class SieveBuilder {
         applyImport(Actions.VACATION);
         var args = new SieveArgument();
         args.writeAtom("vacation");
-        if (vacationAction.getDays() != null)
+        if (Objects.nonNull(vacationAction.getDays()))
             args.writeAtom(":days").writeNumber(vacationAction.getDays());
 
-        if (vacationAction.getSubject() != null)
+        if (Objects.nonNull(vacationAction.getSubject()))
             args.writeAtom(":subject").writeString(vacationAction.getSubject());
 
-        if (vacationAction.getFrom() != null)
+        if (Objects.nonNull(vacationAction.getFrom()))
             args.writeAtom(":from").writeString(vacationAction.getFrom());
 
-        if (vacationAction.getAddresses() != null && !vacationAction.getAddresses().isEmpty())
+        if (Objects.nonNull(vacationAction.getAddresses()) && !vacationAction.getAddresses().isEmpty())
             args.writeAtom(":addresses").writeStringList(vacationAction.getAddresses());
 
-        if (vacationAction.getMime() != null)
+        if (Objects.nonNull(vacationAction.getMime()))
             args.writeAtom(":mime").writeString(vacationAction.getMime());
 
-        if (vacationAction.getHandle() != null)
+        if (Objects.nonNull(vacationAction.getHandle()))
             args.writeAtom(":handle").writeString(vacationAction.getHandle());
 
-        if (vacationAction.getReason() != null)
-            args.writeString(vacationAction.getReason());
-
-        return args;
+        return args.writeString(vacationAction.getReason());
     }
 
     private SieveArgument generateConditions(SieveCondition condition) {
@@ -197,7 +191,7 @@ public class SieveBuilder {
         else if (condition instanceof FalseCondition)
             return _False();
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("condition not supported");
     }
 
     private SieveArgument and(AndCondition andCondition) {
@@ -221,30 +215,52 @@ public class SieveBuilder {
     }
 
     private SieveArgument header(HeaderCondition headerCondition) {
-        return new SieveArgument()
-                .writeAtom("header")
-                .writeAtom(headerCondition.getMatchType().getSyntax())
+        var args = new SieveArgument().writeAtom("header");
+
+        if (Objects.nonNull(headerCondition.getComparator()))
+            args.writeAtom(":comparator").writeString(headerCondition.getComparator().getName());
+
+        if (Objects.nonNull(headerCondition.getMatchType()))
+            args.writeAtom(headerCondition.getMatchType().getSyntax());
+
+        return args
                 .writeStringList(headerCondition.getHeaders())
                 .writeStringList(headerCondition.getKeys());
     }
 
     private SieveArgument envelope(EnvelopeCondition envelopeCondition) {
         applyImport(Conditions.ENVELOPE);
-        return new SieveArgument()
-                .writeAtom("envelope")
-                .writeAtom(envelopeCondition.getAddressPart().getSyntax())
-                .writeAtom(envelopeCondition.getMatchType().getSyntax())
+        var args = new SieveArgument().writeAtom("envelope");
+
+        if (Objects.nonNull((envelopeCondition.getComparator())))
+            args.writeAtom(":comparator").writeString(envelopeCondition.getComparator().getName());
+
+        if (Objects.nonNull(envelopeCondition.getAddressPart()))
+            args.writeAtom(envelopeCondition.getAddressPart().getSyntax());
+
+        if (Objects.nonNull(envelopeCondition.getMatchType()))
+            args.writeAtom(envelopeCondition.getMatchType().getSyntax());
+
+        return args
                 .writeStringList(envelopeCondition.getEnvelopeParts())
                 .writeStringList(envelopeCondition.getKeys());
     }
 
     private SieveArgument address(AddressCondition addressCondition) {
-        return new SieveArgument()
-                .writeAtom("address")
-                .writeAtom(addressCondition.getAddressPart().getSyntax())
-                .writeAtom(addressCondition.getMatchType().getSyntax())
+        var args = new SieveArgument().writeAtom("address");
+        if (Objects.nonNull(addressCondition.getComparator()))
+            args.writeAtom(":comparator").writeString(addressCondition.getComparator().getName());
+
+        if (Objects.nonNull(addressCondition.getAddressPart()))
+            args.writeAtom(addressCondition.getAddressPart().getSyntax());
+
+        if (Objects.nonNull(addressCondition.getMatchType()))
+            args.writeAtom(addressCondition.getMatchType().getSyntax());
+
+        return args
                 .writeStringList(addressCondition.getHeaders())
                 .writeStringList(addressCondition.getKeys());
+
     }
 
     private SieveArgument size(SizeCondition sizeCondition) {
@@ -266,12 +282,10 @@ public class SieveBuilder {
 
     private SieveArgument _False() {
         return new SieveArgument().writeAtom("false");
-
     }
 
     private void applyImport(String capability) {
         imports.addCapability(capability);
     }
-
 
 }

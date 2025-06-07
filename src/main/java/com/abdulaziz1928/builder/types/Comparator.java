@@ -4,7 +4,7 @@ public enum Comparator {
     OCTET,
     ASCII_CASEMAP;
 
-    public String getComparator() {
+    public String getName() {
         return switch (this) {
             case OCTET -> "i;octet";
             case ASCII_CASEMAP -> "i;ascii-casemap";

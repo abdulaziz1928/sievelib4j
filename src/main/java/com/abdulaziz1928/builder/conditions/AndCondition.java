@@ -16,7 +16,7 @@ public class AndCondition extends SieveCondition {
 
     public AndCondition(SieveCondition... conditions) {
         if (conditions.length <= 1)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("more than one condition must be provided");
         this.conditions = Arrays.stream(conditions).toList();
     }
 }

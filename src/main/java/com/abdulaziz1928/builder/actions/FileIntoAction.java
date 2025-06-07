@@ -1,16 +1,20 @@
 package com.abdulaziz1928.builder.actions;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
+import java.util.Objects;
+
 @Getter
 public class FileIntoAction extends SieveAction {
     final String mailbox;
     final boolean copy;
 
+    public FileIntoAction(String mailbox, boolean copy) {
+        this.mailbox = Objects.requireNonNull(mailbox, "mailbox name is required");
+        this.copy = copy;
+    }
+
     public FileIntoAction(String mailbox) {
-        this.mailbox = mailbox;
-        this.copy = false;
+        this(mailbox, false);
     }
 }

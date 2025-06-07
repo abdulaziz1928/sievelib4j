@@ -56,10 +56,11 @@ public class SieveArgument implements Writable {
     @Override
     public void write(OutputStream os) throws IOException {
         for (int i = 0; i < items.size(); i++) {
-            if (i > 0) {
+            var item = items.get(i);
+            if (i > 0 && !(item instanceof ConditionalBlock block && "if".equals(block.keyword))) {
                 os.write(' ');
             }
-            items.get(i).write(os);
+            item.write(os);
         }
     }
 
@@ -99,7 +100,10 @@ public class SieveArgument implements Writable {
         @Override
         public void write(OutputStream os) throws IOException {
             os.write('"');
-            os.write(value.replace("\"", "\\\"").getBytes(StandardCharsets.UTF_8));
+            os.write(value
+                    .replace("\"", "\\\"")
+                    .replace("\\", "\\\\")
+                    .getBytes(StandardCharsets.UTF_8));
             os.write('"');
         }
     }
@@ -146,13 +150,13 @@ public class SieveArgument implements Writable {
                 os.write(' ');
                 condition.write(os);
             }
-            os.write(" {\n".getBytes());
+            os.write(" {\r\n".getBytes());
             for (SieveArgument action : actions) {
                 os.write("  ".getBytes());
                 action.write(os);
-                os.write(";\n".getBytes());
+                os.write(";\r\n".getBytes());
             }
-            os.write("}\n".getBytes());
+            os.write("}".getBytes());
         }
     }
 
@@ -165,7 +169,10 @@ public class SieveArgument implements Writable {
 
         private void write(OutputStream os, String value) throws IOException {
             os.write('"');
-            os.write(value.replace("\"", "\\\"").getBytes(StandardCharsets.UTF_8));
+            os.write(value
+                    .replace("\"", "\\\"")
+                    .replace("\\", "\\\\")
+                    .getBytes(StandardCharsets.UTF_8));
             os.write('"');
         }
 
