@@ -99,10 +99,17 @@ public class SieveArgument implements Writable {
 
         @Override
         public void write(OutputStream os) throws IOException {
+            writeString(os, value);
+        }
+
+        private static void writeString(OutputStream os, String value) throws IOException {
+            if (value.contains("\n") || value.contains("\r")) {
+                throw new IllegalArgumentException("strings must not contain newlines");
+            }
             os.write('"');
             os.write(value
-                    .replace("\"", "\\\"")
                     .replace("\\", "\\\\")
+                    .replace("\"", "\\\"")
                     .getBytes(StandardCharsets.UTF_8));
             os.write('"');
         }
@@ -168,12 +175,7 @@ public class SieveArgument implements Writable {
         }
 
         private void write(OutputStream os, String value) throws IOException {
-            os.write('"');
-            os.write(value
-                    .replace("\"", "\\\"")
-                    .replace("\\", "\\\\")
-                    .getBytes(StandardCharsets.UTF_8));
-            os.write('"');
+            QuotedString.writeString(os, value);
         }
 
         @Override

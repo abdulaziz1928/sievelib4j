@@ -25,6 +25,6 @@ public class VacationAction extends SieveAction {
         this.addresses = Objects.requireNonNullElse(addresses, new ArrayList<>());
         this.mime = mime;
         this.handle = handle;
-        this.reason = Objects.requireNonNull(reason,"reason is required");
+        this.reason = reason;
     }
 }

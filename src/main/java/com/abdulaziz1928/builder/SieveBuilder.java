@@ -48,6 +48,7 @@ public class SieveBuilder {
 
         var os = new ByteArrayOutputStream();
         args.write(os);
+        os.flush();
         return os.toString();
     }
 
@@ -184,12 +185,16 @@ public class SieveBuilder {
             args.writeAtom(":addresses").writeStringList(vacationAction.getAddresses());
 
         if (Objects.nonNull(vacationAction.getMime()))
-            args.writeAtom(":mime").writeString(vacationAction.getMime());
+            args.writeAtom(":mime")
+                    .writeAtom(String.format("\"%s\"",
+                            (vacationAction.getMime().replace("\"", "\\\""))));
 
         if (Objects.nonNull(vacationAction.getHandle()))
             args.writeAtom(":handle").writeString(vacationAction.getHandle());
 
-        return args.writeString(vacationAction.getReason());
+        if (Objects.nonNull(vacationAction.getReason()))
+            args.writeString(vacationAction.getReason());
+        return args;
     }
 
     private SieveArgument generateConditions(SieveCondition condition) {
