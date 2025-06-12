@@ -4,11 +4,7 @@ import com.abdulaziz1928.builder.SieveBuilder;
 import com.abdulaziz1928.builder.SieveFilterSet;
 import com.abdulaziz1928.builder.actions.DiscardAction;
 import com.abdulaziz1928.builder.actions.FileIntoAction;
-import com.abdulaziz1928.builder.actions.SetFlagAction;
-import com.abdulaziz1928.builder.actions.VacationAction;
-import com.abdulaziz1928.builder.conditions.AddressCondition;
-import com.abdulaziz1928.builder.conditions.AndCondition;
-import com.abdulaziz1928.builder.conditions.TrueCondition;
+import com.abdulaziz1928.builder.conditions.EnvelopeCondition;
 import com.abdulaziz1928.builder.control.ControlElse;
 import com.abdulaziz1928.builder.control.ControlIf;
 import com.abdulaziz1928.builder.types.AddressPart;
@@ -20,22 +16,23 @@ import java.util.UUID;
 
 public class App {
     public static void main(String[] args) throws IOException {
-        var sieveFilter = new SieveFilterSet();
-        sieveFilter.appendFilter(SieveBuilder.builder()
+        var script = new SieveFilterSet();
+
+        script.appendFilter(SieveBuilder.builder()
                 .id(UUID.randomUUID())
-                .ifStatement(ControlIf.builder()
-                        .condition(
-                                new AndCondition(
-                                        new AddressCondition(MatchType.IS, AddressPart.DOMAIN, List.of("from"), List.of("home.org")),
-                                        new TrueCondition()
+                .ifStatement(
+                        ControlIf.builder()
+                                .condition(new EnvelopeCondition(
+                                        AddressPart.LOCAL_PART,
+                                        MatchType.CONTAINS,
+                                        List.of("from"),
+                                        List.of("john")
                                 ))
-                        .actions(List.of(
-                                new SetFlagAction("myVar", List.of("\\Seen")),
-                                new FileIntoAction("Inbox", true, "myVar"),
-                                new VacationAction(1, "abc", "user1@home.org", null, null, null, "abc")))
-                        .build())
-                .elseStatement(ControlElse.builder().actions(List.of(new DiscardAction())).build())
+                                .actions(List.of(new FileIntoAction("Friends")))
+                                .build())
+                .elseStatement(new ControlElse(List.of(new DiscardAction())))
                 .build());
-        System.out.println(sieveFilter.generateScript());
+
+        System.out.println(script.generateScript());
     }
 }
