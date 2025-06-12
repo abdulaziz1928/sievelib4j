@@ -157,10 +157,11 @@ public class SieveBuilder {
     }
 
     private void applyFlags(SieveArgument args, String flagVariable, List<String> flags) {
-        applyImport(Common.IMAP4FLAGS);
         if (Objects.nonNull(flagVariable)) {
+            applyImport(Common.IMAP4FLAGS);
             args.writeAtom(":flags").writeString("${%s}".formatted(flagVariable));
         } else if (Objects.nonNull(flags) && !flags.isEmpty()) {
+            applyImport(Common.IMAP4FLAGS);
             args.writeAtom(":flags").writeStringList(flags);
         }
     }
