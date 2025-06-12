@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.abdulaziz1928.builder.SieveImports.Actions;
-import static com.abdulaziz1928.builder.SieveImports.Conditions;
+import static com.abdulaziz1928.builder.SieveImports.*;
 
 @Builder
 public class SieveBuilder {
@@ -119,12 +118,13 @@ public class SieveBuilder {
     }
 
     private SieveArgument flag(AbstractFlagAction flagAction, String name) {
-        applyImport(Actions.IMAP4FLAGS);
+        applyImport(Common.IMAP4FLAGS);
         var args = new SieveArgument().writeAtom(name);
 
-        if (Objects.nonNull(flagAction.getVariableName()))
+        if (Objects.nonNull(flagAction.getVariableName())) {
+            applyImport(Common.VARIABLES);
             args.writeString(flagAction.getVariableName());
-
+        }
         return args.writeStringList(flagAction.getFlags());
     }
 
@@ -157,6 +157,7 @@ public class SieveBuilder {
     }
 
     private void applyFlags(SieveArgument args, String flagVariable, List<String> flags) {
+        applyImport(Common.IMAP4FLAGS);
         if (Objects.nonNull(flagVariable)) {
             args.writeAtom(":flags").writeString("${%s}".formatted(flagVariable));
         } else if (Objects.nonNull(flags) && !flags.isEmpty()) {
@@ -184,13 +185,13 @@ public class SieveBuilder {
         if (Objects.nonNull(vacationAction.getAddresses()) && !vacationAction.getAddresses().isEmpty())
             args.writeAtom(":addresses").writeStringList(vacationAction.getAddresses());
 
+        if (Objects.nonNull(vacationAction.getHandle()))
+            args.writeAtom(":handle").writeString(vacationAction.getHandle());
+
         if (Objects.nonNull(vacationAction.getMime()))
             args.writeAtom(":mime")
                     .writeAtom(String.format("\"%s\"",
                             (vacationAction.getMime().replace("\"", "\\\""))));
-
-        if (Objects.nonNull(vacationAction.getHandle()))
-            args.writeAtom(":handle").writeString(vacationAction.getHandle());
 
         if (Objects.nonNull(vacationAction.getReason()))
             args.writeString(vacationAction.getReason());
@@ -245,15 +246,16 @@ public class SieveBuilder {
     }
 
     private SieveArgument hasFlag(HasFlagCondition hasFlagCondition) {
-        applyImport(Actions.IMAP4FLAGS);
+        applyImport(Common.IMAP4FLAGS);
         var args = new SieveArgument().writeAtom("hasflag");
 
         applyMatchType(args, hasFlagCondition.getMatchType());
         applyComparator(args, hasFlagCondition.getComparator());
 
-        if (Objects.nonNull(hasFlagCondition.getVariables()) && !hasFlagCondition.getVariables().isEmpty())
+        if (Objects.nonNull(hasFlagCondition.getVariables()) && !hasFlagCondition.getVariables().isEmpty()) {
+            applyImport(Common.VARIABLES);
             args.writeStringList(hasFlagCondition.getVariables());
-
+        }
         return args.writeStringList(hasFlagCondition.getFlags());
     }
 

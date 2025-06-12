@@ -18,7 +18,7 @@ public class HasFlagCondition extends SieveCondition {
         this.matchType = matchType;
         this.comparator = comparator;
         this.variables = variables;
-        this.flags = Objects.requireNonNull(flags,"flag-list is required");
+        this.flags = Objects.requireNonNull(flags, "flag-list is required");
     }
 
     public HasFlagCondition(MatchType matchType, List<String> variables, List<String> flags) {
@@ -27,5 +27,9 @@ public class HasFlagCondition extends SieveCondition {
 
     public HasFlagCondition(MatchType matchType, List<String> flags) {
         this(null, matchType, null, flags);
+    }
+
+    public HasFlagCondition(Comparator comparator, MatchType matchType, List<String> flags) {
+        this(comparator, matchType, null, flags);
     }
 }

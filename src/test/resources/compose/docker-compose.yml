@@ -1,0 +1,7 @@
+services:
+  dovecot:
+    build:
+      context: ./dovecot
+      dockerfile: Dockerfile
+    ports:
+      - "4190:4190"
