@@ -101,11 +101,18 @@ public class SieveBuilder {
             return removeFlag(removeFlagAction);
         else if (action instanceof SetFlagAction setFlagAction)
             return setFlag(setFlagAction);
-        else if (action instanceof StopAction) {
+        else if (action instanceof StopAction)
             return stop();
-        }
+         else if(action instanceof CustomSieveAction customSieveAction)
+            return generateCustomAction(customSieveAction);
 
         throw new IllegalArgumentException("action not supported");
+    }
+
+    private SieveArgument generateCustomAction(CustomSieveAction action) {
+        var args = action.generateAction();
+        applyImports(action.getImports());
+        return args;
     }
 
     private SieveArgument stop() {
@@ -229,8 +236,16 @@ public class SieveBuilder {
             return _True();
         else if (condition instanceof FalseCondition)
             return _False();
+        else if (condition instanceof CustomSieveCondition customSieveCondition)
+            return generateCustomCondition(customSieveCondition);
 
         throw new IllegalArgumentException("condition not supported");
+    }
+
+    private SieveArgument generateCustomCondition(CustomSieveCondition condition) {
+        var args = condition.generateCondition();
+        applyImports(condition.getImports());
+        return args;
     }
 
     private SieveArgument and(AndCondition andCondition) {
@@ -345,6 +360,10 @@ public class SieveBuilder {
 
     private void applyImport(String capability) {
         imports.addCapability(capability);
+    }
+
+    private void applyImports(ControlRequire imports) {
+        this.imports.addCapabilities(imports.getCapabilities());
     }
 
 }
