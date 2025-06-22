@@ -101,8 +101,15 @@ public class SieveBuilder {
             return removeFlag(removeFlagAction);
         else if (action instanceof SetFlagAction setFlagAction)
             return setFlag(setFlagAction);
+        else if (action instanceof StopAction) {
+            return stop();
+        }
 
         throw new IllegalArgumentException("action not supported");
+    }
+
+    private SieveArgument stop() {
+        return new SieveArgument().writeAtom("stop");
     }
 
     private SieveArgument addFlag(AddFlagAction addFlagAction) {

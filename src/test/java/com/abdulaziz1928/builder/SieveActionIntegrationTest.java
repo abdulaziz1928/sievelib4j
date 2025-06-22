@@ -66,7 +66,8 @@ public class SieveActionIntegrationTest extends AbstractManageSieveTest {
                 ))),
                 Arguments.of("vacation 3", List.of(new VacationAction(
                         null, null, null, null, null, null, "im out of office"
-                )))
+                ))),
+                Arguments.of("stop",List.of(new StopAction()))
         );
     }
 
