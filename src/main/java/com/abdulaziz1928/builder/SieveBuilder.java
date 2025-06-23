@@ -6,6 +6,7 @@ import com.abdulaziz1928.builder.control.ControlElse;
 import com.abdulaziz1928.builder.control.ControlElseIf;
 import com.abdulaziz1928.builder.control.ControlIf;
 import com.abdulaziz1928.builder.control.ControlRequire;
+import com.abdulaziz1928.builder.types.BodyTransformType;
 import com.abdulaziz1928.builder.types.Comparator;
 import com.abdulaziz1928.builder.types.MatchType;
 import lombok.Builder;
@@ -13,10 +14,7 @@ import lombok.Getter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.abdulaziz1928.builder.SieveImports.*;
 
@@ -103,7 +101,7 @@ public class SieveBuilder {
             return setFlag(setFlagAction);
         else if (action instanceof StopAction)
             return stop();
-         else if(action instanceof CustomSieveAction customSieveAction)
+        else if (action instanceof CustomSieveAction customSieveAction)
             return generateCustomAction(customSieveAction);
 
         throw new IllegalArgumentException("action not supported");
@@ -173,7 +171,8 @@ public class SieveBuilder {
     private void applyFlags(SieveArgument args, String flagVariable, List<String> flags) {
         if (Objects.nonNull(flagVariable)) {
             applyImport(Common.IMAP4FLAGS);
-            args.writeAtom(":flags").writeString("${%s}".formatted(flagVariable));
+            applyImport(Common.VARIABLES);
+            args.writeAtom(":flags").writeString(String.format("${%s}", flagVariable));
         } else if (Objects.nonNull(flags) && !flags.isEmpty()) {
             applyImport(Common.IMAP4FLAGS);
             args.writeAtom(":flags").writeStringList(flags);
@@ -236,10 +235,30 @@ public class SieveBuilder {
             return _True();
         else if (condition instanceof FalseCondition)
             return _False();
+        else if (condition instanceof BodyCondition bodyCondition)
+            return body(bodyCondition);
         else if (condition instanceof CustomSieveCondition customSieveCondition)
             return generateCustomCondition(customSieveCondition);
 
         throw new IllegalArgumentException("condition not supported");
+    }
+
+    private SieveArgument body(BodyCondition bodyCondition) {
+        applyImport(Conditions.BODY);
+        var args = new SieveArgument().writeAtom("body");
+
+        applyComparator(args, bodyCondition.getComparator());
+        applyMatchType(args, bodyCondition.getMatchType());
+
+        var transform = bodyCondition.getBodyTransform();
+        if (Objects.nonNull(transform)) {
+            args.writeAtom(transform.getType().getSyntax());
+            if (BodyTransformType.CONTENT.equals(transform.getType())) {
+                args.writeStringList(transform.getContentList());
+            }
+        }
+
+        return args.writeStringList(bodyCondition.getKeys());
     }
 
     private SieveArgument generateCustomCondition(CustomSieveCondition condition) {

@@ -4,10 +4,7 @@ import com.abdulaziz1928.AbstractManageSieveTest;
 import com.abdulaziz1928.builder.actions.FileIntoAction;
 import com.abdulaziz1928.builder.conditions.*;
 import com.abdulaziz1928.builder.control.ControlIf;
-import com.abdulaziz1928.builder.types.AddressPart;
-import com.abdulaziz1928.builder.types.Comparator;
-import com.abdulaziz1928.builder.types.MatchType;
-import com.abdulaziz1928.builder.types.SizeType;
+import com.abdulaziz1928.builder.types.*;
 import com.fluffypeople.managesieve.ParseException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,7 +61,10 @@ public class SieveConditionIntegrationTest extends AbstractManageSieveTest {
                 Arguments.of("header", new HeaderCondition(MatchType.CONTAINS, List.of("From", "Cc"), List.of("example.com", "abc.com"))),
                 Arguments.of("header 2", new HeaderCondition(Comparator.OCTET, MatchType.CONTAINS, List.of("From", "Cc"), List.of("example.com", "abc.com"))),
                 Arguments.of("size", new SizeCondition(SizeType.UNDER, 1000)),
-                Arguments.of("size 2", new SizeCondition(SizeType.OVER, 1000))
+                Arguments.of("size 2", new SizeCondition(SizeType.OVER, 1000)),
+                Arguments.of("body", new BodyCondition(Comparator.OCTET, MatchType.IS, BodyTransform.raw(), List.of("MAKE MONEY FAST"))),
+                Arguments.of("body 2", new BodyCondition( MatchType.CONTAINS, BodyTransform.content(List.of("text")), List.of("missile", "coordinates"))),
+                Arguments.of("body 3", new BodyCondition( MatchType.CONTAINS, BodyTransform.text(), List.of("project schedule")))
         );
     }
 }
