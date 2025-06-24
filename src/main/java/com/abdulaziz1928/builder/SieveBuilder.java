@@ -6,15 +6,15 @@ import com.abdulaziz1928.builder.control.ControlElse;
 import com.abdulaziz1928.builder.control.ControlElseIf;
 import com.abdulaziz1928.builder.control.ControlIf;
 import com.abdulaziz1928.builder.control.ControlRequire;
-import com.abdulaziz1928.builder.types.BodyTransformType;
+import com.abdulaziz1928.builder.types.*;
 import com.abdulaziz1928.builder.types.Comparator;
-import com.abdulaziz1928.builder.types.MatchType;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static com.abdulaziz1928.builder.SieveImports.*;
 
@@ -237,10 +237,52 @@ public class SieveBuilder {
             return _False();
         else if (condition instanceof BodyCondition bodyCondition)
             return body(bodyCondition);
+        else if (condition instanceof DateCondition dateCondition)
+            return date(dateCondition);
+        else if (condition instanceof CurrentDateCondition currentDateCondition)
+            return currentDate(currentDateCondition);
         else if (condition instanceof CustomSieveCondition customSieveCondition)
             return generateCustomCondition(customSieveCondition);
 
         throw new IllegalArgumentException("condition not supported");
+    }
+
+    private SieveArgument currentDate(CurrentDateCondition dateCondition) {
+        applyImport(Conditions.DATE);
+        var args = new SieveArgument().writeAtom("currentdate");
+        var zone = dateCondition.getDateZone();
+
+        if (Objects.nonNull(zone))
+            args.writeAtom(zone.getType().getSyntax()).writeString(zone.getZone());
+
+        applyComparator(args, dateCondition.getComparator());
+        applyMatchType(args, dateCondition.getMatch());
+
+        return args
+                .writeString(dateCondition.getDatePart().getName())
+                .writeStringList(dateCondition.getKeys());
+    }
+
+    private SieveArgument date(DateCondition dateCondition) {
+        applyImport(Conditions.DATE);
+        var args = new SieveArgument().writeAtom("date");
+        var zone = dateCondition.getDateZone();
+
+        applyIndex(args, dateCondition.getIndex());
+
+        if (Objects.nonNull(zone)) {
+            args.writeAtom(zone.getType().getSyntax());
+            if (DateZoneType.ZONE.equals(zone.getType()))
+                args.writeString(zone.getZone());
+        }
+
+        applyComparator(args, dateCondition.getComparator());
+        applyMatchType(args, dateCondition.getMatch());
+
+        return args
+                .writeString(dateCondition.getHeader())
+                .writeString(dateCondition.getDatePart().getName())
+                .writeStringList(dateCondition.getKeys());
     }
 
     private SieveArgument body(BodyCondition bodyCondition) {
@@ -248,7 +290,7 @@ public class SieveBuilder {
         var args = new SieveArgument().writeAtom("body");
 
         applyComparator(args, bodyCondition.getComparator());
-        applyMatchType(args, bodyCondition.getMatchType());
+        applyMatchType(args, bodyCondition.getMatch());
 
         var transform = bodyCondition.getBodyTransform();
         if (Objects.nonNull(transform)) {
@@ -291,7 +333,7 @@ public class SieveBuilder {
         applyImport(Common.IMAP4FLAGS);
         var args = new SieveArgument().writeAtom("hasflag");
 
-        applyMatchType(args, hasFlagCondition.getMatchType());
+        applyMatchType(args, hasFlagCondition.getMatch());
         applyComparator(args, hasFlagCondition.getComparator());
 
         if (Objects.nonNull(hasFlagCondition.getVariables()) && !hasFlagCondition.getVariables().isEmpty()) {
@@ -304,8 +346,9 @@ public class SieveBuilder {
     private SieveArgument header(HeaderCondition headerCondition) {
         var args = new SieveArgument().writeAtom("header");
 
+        applyIndex(args, headerCondition.getIndex());
         applyComparator(args, headerCondition.getComparator());
-        applyMatchType(args, headerCondition.getMatchType());
+        applyMatchType(args, headerCondition.getMatch());
 
         return args
                 .writeStringList(headerCondition.getHeaders())
@@ -321,7 +364,7 @@ public class SieveBuilder {
         if (Objects.nonNull(envelopeCondition.getAddressPart()))
             args.writeAtom(envelopeCondition.getAddressPart().getSyntax());
 
-        applyMatchType(args, envelopeCondition.getMatchType());
+        applyMatchType(args, envelopeCondition.getMatch());
 
         return args
                 .writeStringList(envelopeCondition.getEnvelopeParts())
@@ -331,12 +374,13 @@ public class SieveBuilder {
     private SieveArgument address(AddressCondition addressCondition) {
         var args = new SieveArgument().writeAtom("address");
 
+        applyIndex(args, addressCondition.getIndex());
         applyComparator(args, addressCondition.getComparator());
 
         if (Objects.nonNull(addressCondition.getAddressPart()))
             args.writeAtom(addressCondition.getAddressPart().getSyntax());
 
-        applyMatchType(args, addressCondition.getMatchType());
+        applyMatchType(args, addressCondition.getMatch());
 
 
         return args
@@ -345,16 +389,31 @@ public class SieveBuilder {
 
     }
 
-    private static void applyComparator(SieveArgument args, Comparator comparator) {
-        if (Objects.nonNull((comparator)))
+    private void applyComparator(SieveArgument args, Comparator comparator) {
+        if (Objects.nonNull((comparator))) {
+            if (Comparator.ASCII_NUMERIC.equals(comparator))
+                applyImport(Comparator.ASCII_NUMERIC.getName());
             args.writeAtom(":comparator").writeString(comparator.getName());
+        }
     }
 
-    private static void applyMatchType(SieveArgument args, MatchType matchType) {
-        if (Objects.nonNull(matchType))
-            args.writeAtom(matchType.getSyntax());
+    private void applyMatchType(SieveArgument args, Match match) {
+        if (Objects.nonNull(match)) {
+            if (Stream.of(MatchType.COUNT, MatchType.VALUE).anyMatch(matchType -> matchType.equals(match.getMatchType())))
+                applyImport(Conditions.RELATIONAL);
+            args.writeAtom(match.getSyntax());
+        }
     }
 
+    private void applyIndex(SieveArgument args, Index index) {
+        if (Objects.nonNull(index)) {
+            applyImport(Conditions.INDEX);
+            args.writeAtom(":index");
+            args.writeNumber(index.getIdx());
+            if (index.isLast())
+                args.writeAtom(":last");
+        }
+    }
 
     private SieveArgument size(SizeCondition sizeCondition) {
         return new SieveArgument()

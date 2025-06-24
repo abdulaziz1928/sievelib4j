@@ -45,7 +45,7 @@ script.appendFilter(SieveBuilder.builder()
                 ControlIf.builder()
                         .condition(new EnvelopeCondition(
                                 AddressPart.LOCAL_PART,
-                                MatchType.CONTAINS,
+                                MatchType.contains(),
                                 List.of("from"),
                                 List.of("john")
                         ))

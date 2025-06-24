@@ -12,6 +12,8 @@ public enum SieveImports {
         public static final String ENVELOPE = "envelope";
         public static final String BODY = "body";
         public static final String DATE = "date";
+        public static final String RELATIONAL = "relational";
+        public static final String INDEX = "index";
     }
 
     public static class Actions {

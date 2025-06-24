@@ -10,7 +10,6 @@ import java.util.List;
 // allof
 @AllArgsConstructor
 @Getter
-@Builder
 public class AndCondition extends SieveCondition {
     private final List<SieveCondition> conditions;
 

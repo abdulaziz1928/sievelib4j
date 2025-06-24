@@ -1,7 +1,8 @@
 package com.abdulaziz1928.builder.conditions;
 
 import com.abdulaziz1928.builder.types.Comparator;
-import com.abdulaziz1928.builder.types.MatchType;
+import com.abdulaziz1928.builder.types.Index;
+import com.abdulaziz1928.builder.types.Match;
 import lombok.Getter;
 
 import java.util.List;
@@ -10,18 +11,28 @@ import java.util.Objects;
 @Getter
 public class HeaderCondition extends SieveCondition {
     private final Comparator comparator;
-    private final MatchType matchType;
+    private final Match match;
     private final List<String> headers;
     private final List<String> keys;
+    private final Index index;
 
-    public HeaderCondition(Comparator comparator, MatchType matchType, List<String> headers, List<String> keys) {
+    private HeaderCondition(Index index, Comparator comparator, Match match, List<String> headers, List<String> keys) {
+        this.index = index;
         this.comparator = comparator;
-        this.matchType = matchType;
+        this.match = match;
         this.headers = Objects.requireNonNull(headers, "header-list is required");
         this.keys = Objects.requireNonNull(keys, "key-list is required");
     }
 
-    public HeaderCondition(MatchType matchType, List<String> headers, List<String> keys) {
-        this(null, matchType, headers, keys);
+    public HeaderCondition(Comparator comparator, Match match, List<String> headers, List<String> keys) {
+        this(null, comparator, match, headers, keys);
+    }
+
+    public HeaderCondition(Match match, List<String> headers, List<String> keys) {
+        this(null, match, headers, keys);
+    }
+
+    public HeaderCondition withIndex(Index index) {
+        return Objects.equals(this.index, index) ? this : new HeaderCondition(index, getComparator(), getMatch(), getHeaders(), getKeys());
     }
 }

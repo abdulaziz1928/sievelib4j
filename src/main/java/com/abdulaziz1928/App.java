@@ -7,8 +7,7 @@ import com.abdulaziz1928.builder.actions.FileIntoAction;
 import com.abdulaziz1928.builder.conditions.EnvelopeCondition;
 import com.abdulaziz1928.builder.control.ControlElse;
 import com.abdulaziz1928.builder.control.ControlIf;
-import com.abdulaziz1928.builder.types.AddressPart;
-import com.abdulaziz1928.builder.types.MatchType;
+import com.abdulaziz1928.builder.types.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +23,7 @@ public class App {
                         ControlIf.builder()
                                 .condition(new EnvelopeCondition(
                                         AddressPart.LOCAL_PART,
-                                        MatchType.CONTAINS,
+                                        Match.contains(),
                                         List.of("from"),
                                         List.of("john")
                                 ))

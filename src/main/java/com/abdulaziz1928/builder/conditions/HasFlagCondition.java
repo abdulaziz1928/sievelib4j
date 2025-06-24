@@ -1,7 +1,7 @@
 package com.abdulaziz1928.builder.conditions;
 
 import com.abdulaziz1928.builder.types.Comparator;
-import com.abdulaziz1928.builder.types.MatchType;
+import com.abdulaziz1928.builder.types.Match;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,27 +9,27 @@ import java.util.Objects;
 
 @Getter
 public class HasFlagCondition extends SieveCondition {
-    private final MatchType matchType;
+    private final Match match;
     private final Comparator comparator;
     private final List<String> variables;
     private final List<String> flags;
 
-    public HasFlagCondition(Comparator comparator, MatchType matchType, List<String> variables, List<String> flags) {
-        this.matchType = matchType;
+    public HasFlagCondition(Comparator comparator, Match match, List<String> variables, List<String> flags) {
+        this.match = match;
         this.comparator = comparator;
         this.variables = variables;
         this.flags = Objects.requireNonNull(flags, "flag-list is required");
     }
 
-    public HasFlagCondition(MatchType matchType, List<String> variables, List<String> flags) {
-        this(null, matchType, variables, flags);
+    public HasFlagCondition(Match match, List<String> variables, List<String> flags) {
+        this(null, match, variables, flags);
     }
 
-    public HasFlagCondition(MatchType matchType, List<String> flags) {
-        this(null, matchType, null, flags);
+    public HasFlagCondition(Match match, List<String> flags) {
+        this(null, match, null, flags);
     }
 
-    public HasFlagCondition(Comparator comparator, MatchType matchType, List<String> flags) {
-        this(comparator, matchType, null, flags);
+    public HasFlagCondition(Comparator comparator, Match match, List<String> flags) {
+        this(comparator, match, null, flags);
     }
 }

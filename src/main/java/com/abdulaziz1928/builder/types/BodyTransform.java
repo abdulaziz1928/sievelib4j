@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
-public class BodyTransform {
+public final class BodyTransform {
     private final BodyTransformType type;
     private final List<String> contentList;
 
