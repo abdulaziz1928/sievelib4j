@@ -8,7 +8,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.testcontainers.containers.DockerComposeContainer;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AbstractManageSieveTest {
+public abstract class AbstractManageSieveTest {
     protected static final DockerComposeContainer<?> dockerComposeInstance =
             SharedDockerComposeContainer.getInstance();
     protected ManageSieveClient client;

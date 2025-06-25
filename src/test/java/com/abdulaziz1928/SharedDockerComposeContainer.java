@@ -6,7 +6,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.File;
 import java.time.Duration;
 
-public class SharedDockerComposeContainer {
+class SharedDockerComposeContainer {
 
     private static final DockerComposeContainer<?> dockerComposeContainer;
 

@@ -14,6 +14,7 @@ public enum SieveImports {
         public static final String DATE = "date";
         public static final String RELATIONAL = "relational";
         public static final String INDEX = "index";
+        public static final String REGEX = "regex";
     }
 
     public static class Actions {

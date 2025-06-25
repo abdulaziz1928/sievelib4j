@@ -39,6 +39,10 @@ public final class Match {
         return new Match(MatchType.VALUE, relationalMatch);
     }
 
+    public static Match regex() {
+        return new Match(MatchType.REGEX);
+    }
+
     public String getSyntax() {
         var syntax = matchType.getSyntax();
         if (relationalMatch != null)

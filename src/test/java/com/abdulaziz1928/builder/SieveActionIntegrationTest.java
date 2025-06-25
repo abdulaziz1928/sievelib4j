@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class SieveActionIntegrationTest extends AbstractManageSieveTest {
+class SieveActionIntegrationTest extends AbstractManageSieveTest {
 
     @ParameterizedTest(name = "Action: {0}")
     @MethodSource("actionsToTest")

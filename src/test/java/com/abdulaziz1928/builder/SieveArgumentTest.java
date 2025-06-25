@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-public class SieveArgumentTest {
+class SieveArgumentTest {
 
     @SneakyThrows
     private String writeToString(SieveArgument args) {

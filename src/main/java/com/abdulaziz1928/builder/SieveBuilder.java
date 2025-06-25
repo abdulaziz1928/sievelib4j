@@ -399,8 +399,9 @@ public class SieveBuilder {
 
     private void applyMatchType(SieveArgument args, Match match) {
         if (Objects.nonNull(match)) {
-            if (Stream.of(MatchType.COUNT, MatchType.VALUE).anyMatch(matchType -> matchType.equals(match.getMatchType())))
-                applyImport(Conditions.RELATIONAL);
+            String requiredImport;
+            if (Objects.nonNull((requiredImport = match.getMatchType().getRequiredExtension())))
+                applyImport(requiredImport);
             args.writeAtom(match.getSyntax());
         }
     }
@@ -408,8 +409,7 @@ public class SieveBuilder {
     private void applyIndex(SieveArgument args, Index index) {
         if (Objects.nonNull(index)) {
             applyImport(Conditions.INDEX);
-            args.writeAtom(":index");
-            args.writeNumber(index.getIdx());
+            args.writeAtom(":index").writeNumber(index.getIdx());
             if (index.isLast())
                 args.writeAtom(":last");
         }

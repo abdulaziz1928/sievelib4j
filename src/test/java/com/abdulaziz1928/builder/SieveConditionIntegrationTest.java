@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class SieveConditionIntegrationTest extends AbstractManageSieveTest {
+class SieveConditionIntegrationTest extends AbstractManageSieveTest {
 
     @ParameterizedTest(name = "Condition: {0}")
     @MethodSource("conditionsToTest")
@@ -62,6 +62,7 @@ public class SieveConditionIntegrationTest extends AbstractManageSieveTest {
                 Arguments.of("header", new HeaderCondition(Match.contains(), List.of("From", "Cc"), List.of("example.com", "abc.com"))),
                 Arguments.of("header 2", new HeaderCondition(Comparator.OCTET, Match.contains(), List.of("From", "Cc"), List.of("example.com", "abc.com"))),
                 Arguments.of("header 3", new HeaderCondition(Comparator.OCTET, Match.contains(), List.of("From", "Cc"), List.of("example.com", "abc.com")).withIndex(new Index(2))),
+                Arguments.of("header 4", new HeaderCondition(Comparator.OCTET, Match.regex(), List.of("subject"), List.of("^[^[:lower:]]+$"))),
                 Arguments.of("size", new SizeCondition(SizeType.UNDER, 1000)),
                 Arguments.of("size 2", new SizeCondition(SizeType.OVER, 1000)),
                 Arguments.of("body", new BodyCondition(Comparator.OCTET, Match.is(), BodyTransform.raw(), List.of("MAKE MONEY FAST"))),
