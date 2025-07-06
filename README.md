@@ -13,13 +13,13 @@
 
 ---
 
-## Installation (To Be Published)
+## Installation
 
 **Maven**:
 
 ```xml
 <dependency>
-  <groupId>com.abdulaziz1928</groupId>
+  <groupId>io.github.abdulaziz1928</groupId>
   <artifactId>sievelib4j</artifactId>
   <version>1.0.0</version>
 </dependency>
@@ -28,7 +28,7 @@
 **Gradle**:
 
 ```
-implementation 'com.abdulaziz1928:sievelib4j:1.0.0'
+implementation 'io.github.abdulaziz1928:sievelib4j:1.0.0'
 ```
 
 ---
