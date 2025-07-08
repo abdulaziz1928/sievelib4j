@@ -42,6 +42,7 @@ class SieveConditionIntegrationTest extends AbstractManageSieveTest {
                 Arguments.of("false", new FalseCondition()),
                 Arguments.of("not", new NotCondition(new FalseCondition())),
                 Arguments.of("exists", new ExistsCondition(List.of("Cc", "Message-Id"))),
+                Arguments.of("exists 2", new ExistsCondition(true, true, List.of("Content-Type", "Content-Disposition"))),
                 Arguments.of("and", new AndCondition(new TrueCondition(), new FalseCondition())),
                 Arguments.of("or", new OrCondition(new TrueCondition(), new FalseCondition())),
                 Arguments.of("nested and or", new AndCondition(new TrueCondition(), new OrCondition(new TrueCondition(), new FalseCondition()))),
@@ -51,6 +52,7 @@ class SieveConditionIntegrationTest extends AbstractManageSieveTest {
                 Arguments.of("address 3", new AddressCondition(null, null, List.of("from"), List.of("user@examle.com"))),
                 Arguments.of("address 4", new AddressCondition(Match.is(), AddressPart.LOCAL_PART, List.of("from"), List.of("user"))),
                 Arguments.of("address 5", new AddressCondition(Match.is(), AddressPart.LOCAL_PART, List.of("from"), List.of("user")).withIndex(new Index(4))),
+                Arguments.of("address 6", new AddressCondition(true, true, null, AddressPart.ALL, Match.is(), List.of("from"), List.of("tim@example.com"))),
                 Arguments.of("envelope", new EnvelopeCondition(AddressPart.ALL, Match.is(), List.of("from"), List.of("user@examle.com"))),
                 Arguments.of("envelope 2", new EnvelopeCondition(Comparator.OCTET, AddressPart.DOMAIN, Match.matches(), List.of("from"), List.of("examle.com"))),
                 Arguments.of("envelope 3", new AddressCondition(null, null, List.of("from"), List.of("user@examle.com"))),
@@ -63,6 +65,7 @@ class SieveConditionIntegrationTest extends AbstractManageSieveTest {
                 Arguments.of("header 2", new HeaderCondition(Comparator.OCTET, Match.contains(), List.of("From", "Cc"), List.of("example.com", "abc.com"))),
                 Arguments.of("header 3", new HeaderCondition(Comparator.OCTET, Match.contains(), List.of("From", "Cc"), List.of("example.com", "abc.com")).withIndex(new Index(2))),
                 Arguments.of("header 4", new HeaderCondition(Comparator.OCTET, Match.regex(), List.of("subject"), List.of("^[^[:lower:]]+$"))),
+                Arguments.of("header 5", new HeaderCondition(true, true, MimeOpts.contentType(), Comparator.OCTET, Match.is(), List.of("Content-Type"), List.of("text/plain"))),
                 Arguments.of("size", new SizeCondition(SizeType.UNDER, 1000)),
                 Arguments.of("size 2", new SizeCondition(SizeType.OVER, 1000)),
                 Arguments.of("body", new BodyCondition(Comparator.OCTET, Match.is(), BodyTransform.raw(), List.of("MAKE MONEY FAST"))),
@@ -75,7 +78,6 @@ class SieveConditionIntegrationTest extends AbstractManageSieveTest {
                 Arguments.of("currentdate", new CurrentDateCondition(Comparator.OCTET, "+0000", Match.value(RelationalMatch.GE), DatePart.WEEKDAY, List.of("0"))),
                 Arguments.of("currentdate 2", new CurrentDateCondition("+0000", Match.value(RelationalMatch.GE), DatePart.WEEKDAY, List.of("0"))),
                 Arguments.of("currentdate 3", new CurrentDateCondition(null, null, DatePart.WEEKDAY, List.of("0")))
-
         );
     }
 }

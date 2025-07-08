@@ -14,7 +14,6 @@ import lombok.Getter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static com.abdulaziz1928.builder.SieveImports.*;
 
@@ -28,17 +27,22 @@ public class SieveBuilder {
     @Builder.Default
     private final List<ControlElseIf> elseIfStatements = new ArrayList<>();
     private final ControlElse elseStatement;
+    @Builder.Default
+    private final SieveEnclosingBlock enclosingBlock;
 
     public String generateScript() throws IOException {
-        var args = new SieveArgument();
-        if (Objects.nonNull(id)) {
+        if (Objects.nonNull(enclosingBlock))
+            applyImports(enclosingBlock.getImports());
+
+        var args = new SieveArgument(enclosingBlock);
+
+        if (Objects.nonNull(id))
             args.appendArgument(filterId(id));
-        }
+
         args.appendArgument(ifCondition(ifStatement));
 
-        if (!elseIfStatements.isEmpty())
-            for (var statement : elseIfStatements)
-                args.appendArgument(elseIfCondition(statement));
+        if (Objects.nonNull(elseIfStatements))
+            elseIfStatements.forEach(elsif -> args.appendArgument(elseIfCondition(elsif)));
 
         if (Objects.nonNull(elseStatement))
             args.appendArgument(elseCondition(elseStatement));
@@ -50,7 +54,7 @@ public class SieveBuilder {
     }
 
     private SieveArgument filterId(UUID id) {
-        return new SieveArgument().writeAtom(String.format("# Filter: %s\r\n", id));
+        return new SieveArgument().writeComment(String.format("Filter: %s", id));
     }
 
     private SieveArgument ifCondition(ControlIf ifStatement) {
@@ -103,8 +107,14 @@ public class SieveBuilder {
             return stop();
         else if (action instanceof CustomSieveAction customSieveAction)
             return generateCustomAction(customSieveAction);
+        else if (action instanceof BreakAction)
+            return _Break();
 
         throw new IllegalArgumentException("action not supported");
+    }
+
+    private SieveArgument _Break() {
+        return new SieveArgument().writeAtom("break");
     }
 
     private SieveArgument generateCustomAction(CustomSieveAction action) {
@@ -345,7 +355,7 @@ public class SieveBuilder {
 
     private SieveArgument header(HeaderCondition headerCondition) {
         var args = new SieveArgument().writeAtom("header");
-
+        applyMime(args, headerCondition.getMime(), headerCondition.getAnyChild(), headerCondition.getMimeOpts());
         applyIndex(args, headerCondition.getIndex());
         applyComparator(args, headerCondition.getComparator());
         applyMatchType(args, headerCondition.getMatch());
@@ -374,6 +384,7 @@ public class SieveBuilder {
     private SieveArgument address(AddressCondition addressCondition) {
         var args = new SieveArgument().writeAtom("address");
 
+        applyMime(args, addressCondition.getMime(), addressCondition.getAnyChild(), null);
         applyIndex(args, addressCondition.getIndex());
         applyComparator(args, addressCondition.getComparator());
 
@@ -406,6 +417,20 @@ public class SieveBuilder {
         }
     }
 
+    private void applyMime(SieveArgument args, Boolean mime, Boolean anyChild, MimeOpts mimeOpts) {
+        if (Boolean.TRUE.equals(mime)) {
+            applyImport(Conditions.MIME);
+            args.writeAtom(":mime");
+            if (Boolean.TRUE.equals(anyChild))
+                args.writeAtom(":anychild");
+            if (Objects.nonNull(mimeOpts)) {
+                args.writeAtom(mimeOpts.getType().getSyntax());
+                if (Objects.nonNull(mimeOpts.getParamList()))
+                    args.writeStringList(mimeOpts.getParamList());
+            }
+        }
+    }
+
     private void applyIndex(SieveArgument args, Index index) {
         if (Objects.nonNull(index)) {
             applyImport(Conditions.INDEX);
@@ -423,9 +448,9 @@ public class SieveBuilder {
     }
 
     private SieveArgument exists(ExistsCondition existsCondition) {
-        return new SieveArgument()
-                .writeAtom("exists")
-                .writeStringList(existsCondition.getHeaders());
+        var args = new SieveArgument().writeAtom("exists");
+        applyMime(args, existsCondition.getMime(), existsCondition.getAnyChild(), null);
+        return args.writeStringList(existsCondition.getHeaders());
     }
 
     private SieveArgument _True() {

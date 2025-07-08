@@ -15,11 +15,15 @@ public enum SieveImports {
         public static final String RELATIONAL = "relational";
         public static final String INDEX = "index";
         public static final String REGEX = "regex";
+        public static final String MIME = "mime";
     }
 
     public static class Actions {
         public static final String FILE_INTO = "fileinto";
         public static final String COPY = "copy";
         public static final String VACATION = "vacation";
+        public static final String REPLACE = "replace";
+        public static final String ENCLOSE = "enclose";
+        public static final String EXTRACT_TEXT = "extracttext";
     }
 }

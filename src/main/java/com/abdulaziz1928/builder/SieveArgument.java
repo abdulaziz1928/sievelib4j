@@ -11,7 +11,20 @@ interface Writable {
 }
 
 public class SieveArgument implements Writable {
+    private final SieveEnclosingBlock enclosingBlock;
     private final List<Writable> items = new ArrayList<>();
+
+    public SieveArgument(SieveEnclosingBlock enclosingBlock) {
+        this.enclosingBlock = enclosingBlock;
+    }
+
+    public SieveArgument() {
+        this.enclosingBlock = null;
+    }
+
+    private boolean hasEnclosingBlock() {
+        return enclosingBlock != null;
+    }
 
     public SieveArgument writeString(String s) {
         items.add(new QuotedString(s));
@@ -43,6 +56,11 @@ public class SieveArgument implements Writable {
         return this;
     }
 
+    public SieveArgument writeComment(String s) {
+        items.add(new Comment(s));
+        return this;
+    }
+
     public SieveArgument writeTest(String name, List<SieveArgument> args) {
         items.add(new TestOperator(name, args));
         return this;
@@ -55,13 +73,29 @@ public class SieveArgument implements Writable {
 
     @Override
     public void write(OutputStream os) throws IOException {
-        for (int i = 0; i < items.size(); i++) {
+        if (items.isEmpty()) return;
+
+        int start = 0;
+        if (hasEnclosingBlock()) {
+            if (items.get(0) instanceof Comment comment) {
+                comment.write(os);
+                start = 1;
+            }
+            enclosingBlock.getBlockValue().write(os);
+            os.write(" {\r\n  ".getBytes());
+        }
+
+        for (int i = start; i < items.size(); i++) {
             var item = items.get(i);
             if (i > 0 && !(item instanceof ConditionalBlock block && "if".equals(block.keyword))) {
                 os.write(' ');
             }
-            item.write(os);
+            if (item instanceof ConditionalBlock itemBlock)
+                itemBlock.write(os, hasEnclosingBlock());
+            else
+                item.write(os);
         }
+        if (hasEnclosingBlock()) os.write("\r\n}".getBytes());
     }
 
     private static class Atom implements Writable {
@@ -152,6 +186,10 @@ public class SieveArgument implements Writable {
 
         @Override
         public void write(OutputStream os) throws IOException {
+            write(os, false);
+        }
+
+        public void write(OutputStream os, boolean tab) throws IOException {
             os.write(keyword.getBytes());
             if (condition != null) {
                 os.write(' ');
@@ -159,10 +197,14 @@ public class SieveArgument implements Writable {
             }
             os.write(" {\r\n".getBytes());
             for (SieveArgument action : actions) {
+                if (tab)
+                    os.write("  ".getBytes());
                 os.write("  ".getBytes());
                 action.write(os);
                 os.write(";\r\n".getBytes());
             }
+            if (tab)
+                os.write("  ".getBytes());
             os.write("}".getBytes());
         }
     }
@@ -190,6 +232,21 @@ public class SieveArgument implements Writable {
                 }
                 os.write(']');
             }
+        }
+    }
+
+    private static class Comment implements Writable {
+        final String value;
+
+        Comment(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public void write(OutputStream os) throws IOException {
+            os.write("# ".getBytes());
+            os.write(value.getBytes(StandardCharsets.UTF_8));
+            os.write("\r\n".getBytes());
         }
     }
 }

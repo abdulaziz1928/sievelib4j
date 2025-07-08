@@ -19,7 +19,7 @@ class SieveActionIntegrationTest extends AbstractManageSieveTest {
 
     @ParameterizedTest(name = "Action: {0}")
     @MethodSource("actionsToTest")
-    void shouldBuildAndValidateScriptConditionSuccessfully(String label, List<SieveAction> actions) throws IOException, ParseException {
+    void shouldBuildAndValidateScriptActionSuccessfully(String label, List<SieveAction> actions) throws IOException, ParseException {
         var builder = SieveBuilder.builder()
                 .id(UUID.randomUUID())
                 .ifStatement(ControlIf.builder()
