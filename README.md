@@ -21,14 +21,14 @@
 <dependency>
   <groupId>io.github.abdulaziz1928</groupId>
   <artifactId>sievelib4j</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
 **Gradle**:
 
 ```
-implementation 'io.github.abdulaziz1928:sievelib4j:1.1.0'
+implementation 'io.github.abdulaziz1928:sievelib4j:1.1.1'
 ```
 
 ---

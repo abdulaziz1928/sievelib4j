@@ -1,9 +1,9 @@
 package com.abdulaziz1928.builder.types;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public class MimeOpts {
@@ -11,7 +11,7 @@ public class MimeOpts {
     private final List<String> paramList;
 
     private MimeOpts(MimeOptsType type, List<String> paramList) {
-        this.type = Objects.requireNonNull(type, "mime-opts type is required");
+        this.type = SieveUtils.requiredParam(type, "mime-opts type is required");
         this.paramList = paramList;
     }
 
@@ -28,9 +28,7 @@ public class MimeOpts {
     }
 
     public static MimeOpts param(List<String> paramList) {
-        if (Objects.isNull(paramList) || paramList.isEmpty())
-            throw new IllegalArgumentException("param-list must not be empty");
-        return new MimeOpts(MimeOptsType.PARAM, paramList);
+        return new MimeOpts(MimeOptsType.PARAM, SieveUtils.requiredParamList(paramList,"param-list must not be empty"));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.abdulaziz1928.builder.actions;
 
+import com.abdulaziz1928.builder.exceptions.SieveRequiredParamException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,10 +21,10 @@ public class VacationAction extends SieveAction {
     @Builder
     public VacationAction(Integer days, String subject, String from, List<String> addresses, String mime, String handle, String reason) {
         if (Objects.isNull(mime) && Objects.isNull(reason)) {
-            throw new IllegalArgumentException("Vacation action requires either mime or reason argument to be present");
+            throw new SieveRequiredParamException("Vacation action requires either mime or reason argument to be present");
         }
         if (Objects.nonNull(mime) && Objects.nonNull(reason)) {
-            throw new IllegalArgumentException("Only one of mime or reason may be specified in the vacation action");
+            throw new SieveRequiredParamException("Only one of mime or reason may be specified in the vacation action");
         }
         this.days = days;
         this.subject = subject;

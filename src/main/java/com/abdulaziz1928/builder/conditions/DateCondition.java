@@ -1,5 +1,6 @@
 package com.abdulaziz1928.builder.conditions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import com.abdulaziz1928.builder.types.*;
 import lombok.Getter;
 
@@ -21,9 +22,9 @@ public class DateCondition extends SieveCondition {
         this.comparator = comparator;
         this.dateZone = dateZone;
         this.match = match;
-        this.header = Objects.requireNonNull(header, "header name is required");
-        this.datePart = Objects.requireNonNull(datePart, "date part is required");
-        this.keys = Objects.requireNonNull(keys, "key-list is required");
+        this.header = SieveUtils.requiredParam(header, "header name is required");
+        this.datePart = SieveUtils.requiredParam(datePart, "date part is required");
+        this.keys = SieveUtils.requiredParamList(keys, "key-list is required");
     }
 
     public DateCondition(Comparator comparator, DateZone dateZone, Match match, String header, DatePart datePart, List<String> keys) {

@@ -1,14 +1,14 @@
 package com.abdulaziz1928.builder.conditions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import lombok.Getter;
 
-import java.util.Objects;
 
 @Getter
 public class NotCondition extends SieveCondition {
     private final SieveCondition condition;
 
     public NotCondition(SieveCondition condition) {
-        this.condition = Objects.requireNonNull(condition,"condition is required");
+        this.condition = SieveUtils.requiredParam(condition,"condition is required");
     }
 }

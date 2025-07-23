@@ -1,5 +1,6 @@
 package com.abdulaziz1928.builder.conditions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import com.abdulaziz1928.builder.types.AddressPart;
 import com.abdulaziz1928.builder.types.Comparator;
 import com.abdulaziz1928.builder.types.Index;
@@ -27,8 +28,8 @@ public class AddressCondition extends AbstractAddressCondition {
 
     public AddressCondition(Boolean mime, Boolean anyChild, Comparator comparator, AddressPart addressPart, List<String> headers, List<String> keys, Index index, Match match) {
         super(addressPart, match, comparator);
-        this.headers = Objects.requireNonNull(headers, "header-list is required");
-        this.keys = Objects.requireNonNull(keys, "key-list is required");
+        this.headers = SieveUtils.requiredParamList(headers, "header-list is required");
+        this.keys = SieveUtils.requiredParamList(keys, "key-list is required");
         this.index = index;
         this.mime = mime;
         this.anyChild = anyChild;

@@ -6,14 +6,17 @@ import com.abdulaziz1928.builder.control.ControlElse;
 import com.abdulaziz1928.builder.control.ControlElseIf;
 import com.abdulaziz1928.builder.control.ControlIf;
 import com.abdulaziz1928.builder.control.ControlRequire;
+import com.abdulaziz1928.builder.exceptions.SieveUnsupportedException;
 import com.abdulaziz1928.builder.types.*;
-import com.abdulaziz1928.builder.types.Comparator;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import static com.abdulaziz1928.builder.SieveImports.*;
 
@@ -27,7 +30,6 @@ public class SieveBuilder {
     @Builder.Default
     private final List<ControlElseIf> elseIfStatements = new ArrayList<>();
     private final ControlElse elseStatement;
-    @Builder.Default
     private final SieveEnclosingBlock enclosingBlock;
 
     public String generateScript() throws IOException {
@@ -110,7 +112,7 @@ public class SieveBuilder {
         else if (action instanceof BreakAction)
             return _Break();
 
-        throw new IllegalArgumentException("action not supported");
+        throw new SieveUnsupportedException("action not supported");
     }
 
     private SieveArgument _Break() {
@@ -254,7 +256,7 @@ public class SieveBuilder {
         else if (condition instanceof CustomSieveCondition customSieveCondition)
             return generateCustomCondition(customSieveCondition);
 
-        throw new IllegalArgumentException("condition not supported");
+        throw new SieveUnsupportedException("condition not supported");
     }
 
     private SieveArgument currentDate(CurrentDateCondition dateCondition) {

@@ -1,11 +1,11 @@
 package com.abdulaziz1928.builder.conditions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import com.abdulaziz1928.builder.types.Comparator;
 import com.abdulaziz1928.builder.types.Match;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public class HasFlagCondition extends SieveCondition {
@@ -18,7 +18,7 @@ public class HasFlagCondition extends SieveCondition {
         this.match = match;
         this.comparator = comparator;
         this.variables = variables;
-        this.flags = Objects.requireNonNull(flags, "flag-list is required");
+        this.flags = SieveUtils.requiredParam(flags, "flag-list is required");
     }
 
     public HasFlagCondition(Match match, List<String> variables, List<String> flags) {

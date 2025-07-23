@@ -1,8 +1,7 @@
 package com.abdulaziz1928.builder.types;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import lombok.Getter;
-
-import java.util.Objects;
 
 @Getter
 public final class DateZone {
@@ -10,7 +9,7 @@ public final class DateZone {
     private final String zone;
 
     private DateZone(DateZoneType type, String zone) {
-        this.type = Objects.requireNonNull(type, "zone type is required");
+        this.type = SieveUtils.requiredParam(type, "zone type is required");
         this.zone = zone;
     }
 

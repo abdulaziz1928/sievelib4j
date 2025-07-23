@@ -1,9 +1,9 @@
 package com.abdulaziz1928.builder.conditions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public class ExistsCondition extends SieveCondition {
@@ -18,6 +18,6 @@ public class ExistsCondition extends SieveCondition {
     public ExistsCondition(Boolean mime, Boolean anyChild, List<String> headers) {
         this.mime = mime;
         this.anyChild = anyChild;
-        this.headers = Objects.requireNonNull(headers, "header-list is required");
+        this.headers = SieveUtils.requiredParamList(headers, "header-list is required");
     }
 }

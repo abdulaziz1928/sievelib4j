@@ -1,8 +1,7 @@
 package com.abdulaziz1928.builder.actions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import lombok.Getter;
-
-import java.util.Objects;
 
 @Getter
 public class RedirectAction extends SieveAction {
@@ -10,7 +9,7 @@ public class RedirectAction extends SieveAction {
     final boolean copy;
 
     public RedirectAction(String address, boolean copy) {
-        this.address = Objects.requireNonNull(address, "address name is required");
+        this.address = SieveUtils.requiredParam(address, "address name is required");
         this.copy = copy;
     }
 

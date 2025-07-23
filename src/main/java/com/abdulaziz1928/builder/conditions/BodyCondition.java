@@ -1,12 +1,12 @@
 package com.abdulaziz1928.builder.conditions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import com.abdulaziz1928.builder.types.BodyTransform;
 import com.abdulaziz1928.builder.types.Comparator;
 import com.abdulaziz1928.builder.types.Match;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public class BodyCondition extends SieveCondition {
@@ -19,7 +19,7 @@ public class BodyCondition extends SieveCondition {
         this.comparator = comparator;
         this.match = match;
         this.bodyTransform = bodyTransform;
-        this.keys = Objects.requireNonNull(keys, "key-list is required");
+        this.keys = SieveUtils.requiredParamList(keys, "key-list is required");
     }
 
     public BodyCondition(Match match, BodyTransform bodyTransform, List<String> keys) {

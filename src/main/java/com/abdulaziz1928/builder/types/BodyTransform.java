@@ -1,9 +1,9 @@
 package com.abdulaziz1928.builder.types;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public final class BodyTransform {
@@ -11,7 +11,7 @@ public final class BodyTransform {
     private final List<String> contentList;
 
     private BodyTransform(BodyTransformType type, List<String> contentList) {
-        this.type = Objects.requireNonNull(type,"body-transform type is required");
+        this.type = SieveUtils.requiredParam(type, "body-transform type is required");
         this.contentList = contentList;
     }
 
@@ -24,9 +24,7 @@ public final class BodyTransform {
     }
 
     public static BodyTransform content(List<String> contentTypes) {
-        if (Objects.isNull(contentTypes) || contentTypes.isEmpty())
-            throw new IllegalArgumentException("content-type-list must not be empty");
-        return new BodyTransform(BodyTransformType.CONTENT, contentTypes);
+        return new BodyTransform(BodyTransformType.CONTENT, SieveUtils.requiredParamList(contentTypes, "content-type-list must not be empty"));
     }
 
 }

@@ -1,6 +1,10 @@
 package com.abdulaziz1928.builder.conditions;
 
-import com.abdulaziz1928.builder.types.*;
+import com.abdulaziz1928.builder.SieveUtils;
+import com.abdulaziz1928.builder.types.Comparator;
+import com.abdulaziz1928.builder.types.DatePart;
+import com.abdulaziz1928.builder.types.DateZone;
+import com.abdulaziz1928.builder.types.Match;
 import lombok.Getter;
 
 import java.util.List;
@@ -18,8 +22,8 @@ public class CurrentDateCondition extends SieveCondition {
         this.comparator = comparator;
         this.dateZone = Objects.nonNull(zone) ? DateZone.zone(zone) : null;
         this.match = match;
-        this.datePart = Objects.requireNonNull(datePart, "date part is required");
-        this.keys = Objects.requireNonNull(keys, "key-list is required");
+        this.datePart = SieveUtils.requiredParam(datePart, "date part is required");
+        this.keys = SieveUtils.requiredParamList(keys, "key-list is required");
     }
 
     public CurrentDateCondition(String zone, Match match, DatePart datePart, List<String> keys) {

@@ -1,9 +1,9 @@
 package com.abdulaziz1928.builder.actions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public class FileIntoAction extends SieveAction {
@@ -38,7 +38,7 @@ public class FileIntoAction extends SieveAction {
     }
 
     private FileIntoAction(String mailbox, boolean copy, String flagsVariableName, List<String> flags) {
-        this.mailbox = Objects.requireNonNull(mailbox, "mailbox name is required");
+        this.mailbox = SieveUtils.requiredParam(mailbox, "mailbox name is required");
         this.copy = copy;
         this.flagsVariableName = flagsVariableName;
         this.flags = flags;

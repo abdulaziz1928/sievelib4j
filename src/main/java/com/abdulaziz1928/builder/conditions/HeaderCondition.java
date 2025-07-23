@@ -1,5 +1,6 @@
 package com.abdulaziz1928.builder.conditions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import com.abdulaziz1928.builder.types.Comparator;
 import com.abdulaziz1928.builder.types.Index;
 import com.abdulaziz1928.builder.types.Match;
@@ -25,8 +26,8 @@ public class HeaderCondition extends SieveCondition {
         this.index = index;
         this.comparator = comparator;
         this.match = match;
-        this.headers = Objects.requireNonNull(headers, "header-list is required");
-        this.keys = Objects.requireNonNull(keys, "key-list is required");
+        this.headers = SieveUtils.requiredParamList(headers, "header-list is required");
+        this.keys = SieveUtils.requiredParamList(keys, "key-list is required");
         this.mime = mime;
         this.anyChild = anyChild;
         this.mimeOpts = mimeOpts;

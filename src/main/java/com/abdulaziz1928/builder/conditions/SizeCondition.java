@@ -1,9 +1,9 @@
 package com.abdulaziz1928.builder.conditions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import com.abdulaziz1928.builder.types.SizeType;
 import lombok.Getter;
 
-import java.util.Objects;
 
 @Getter
 public class SizeCondition extends SieveCondition {
@@ -11,7 +11,7 @@ public class SizeCondition extends SieveCondition {
     private final long size;
 
     public SizeCondition(SizeType sizeType, long size) {
-        this.sizeType = Objects.requireNonNull(sizeType,"size type is required");
+        this.sizeType = SieveUtils.requiredParam(sizeType, "size type is required");
         this.size = size;
     }
 }

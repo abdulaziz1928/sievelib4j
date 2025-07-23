@@ -1,8 +1,8 @@
 package com.abdulaziz1928.builder.types;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import lombok.Getter;
 
-import java.util.Objects;
 
 @Getter
 public final class Match {
@@ -10,12 +10,12 @@ public final class Match {
     private final RelationalMatch relationalMatch;
 
     private Match(MatchType matchType, RelationalMatch relationalMatch) {
-        this.matchType = Objects.requireNonNull(matchType, "match type is required");
-        this.relationalMatch = Objects.requireNonNull(relationalMatch, "relational match is required");
+        this.matchType = SieveUtils.requiredParam(matchType, "match type is required");
+        this.relationalMatch = SieveUtils.requiredParam(relationalMatch, "relational match is required");
     }
 
     private Match(MatchType matchType) {
-        this.matchType = Objects.requireNonNull(matchType, "match type is required");
+        this.matchType = SieveUtils.requiredParam(matchType, "match type is required");
         this.relationalMatch = null;
     }
 

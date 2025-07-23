@@ -1,12 +1,12 @@
 package com.abdulaziz1928.builder.control;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import com.abdulaziz1928.builder.actions.SieveAction;
 import com.abdulaziz1928.builder.conditions.SieveCondition;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public final class ControlElseIf extends SieveControl {
@@ -15,7 +15,7 @@ public final class ControlElseIf extends SieveControl {
 
     @Builder
     public ControlElseIf(SieveCondition condition, List<SieveAction> actions) {
-        this.condition = Objects.requireNonNull(condition, "condition is required");
-        this.actions = Objects.requireNonNull(actions, "actions are required");
+        this.condition = SieveUtils.requiredParam(condition, "condition is required");
+        this.actions = SieveUtils.requiredParamList(actions, "actions are required");
     }
 }

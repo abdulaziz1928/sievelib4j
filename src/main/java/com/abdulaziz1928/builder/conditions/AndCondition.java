@@ -1,7 +1,7 @@
 package com.abdulaziz1928.builder.conditions;
 
+import com.abdulaziz1928.builder.exceptions.SieveRequiredParamException;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -15,7 +15,7 @@ public class AndCondition extends SieveCondition {
 
     public AndCondition(SieveCondition... conditions) {
         if (conditions.length <= 1)
-            throw new IllegalArgumentException("more than one condition must be provided");
+            throw new SieveRequiredParamException("more than one condition must be provided");
         this.conditions = Arrays.stream(conditions).toList();
     }
 }

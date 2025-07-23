@@ -1,5 +1,7 @@
 package com.abdulaziz1928.builder;
 
+import com.abdulaziz1928.builder.exceptions.SieveArgumentException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -138,7 +140,7 @@ public class SieveArgument implements Writable {
 
         private static void writeString(OutputStream os, String value) throws IOException {
             if (value.contains("\n") || value.contains("\r")) {
-                throw new IllegalArgumentException("strings must not contain newlines");
+                throw new SieveArgumentException("strings must not contain newlines");
             }
             os.write('"');
             os.write(value
@@ -177,7 +179,7 @@ public class SieveArgument implements Writable {
 
         ConditionalBlock(String keyword, SieveArgument condition, List<SieveArgument> actions) {
             if (actions == null || actions.isEmpty()) {
-                throw new IllegalArgumentException(keyword + " block must have at least one action.");
+                throw new SieveArgumentException(keyword + " block must have at least one action.");
             }
             this.keyword = keyword;
             this.condition = condition;

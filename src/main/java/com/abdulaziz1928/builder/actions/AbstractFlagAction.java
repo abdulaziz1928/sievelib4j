@@ -1,9 +1,9 @@
 package com.abdulaziz1928.builder.actions;
 
+import com.abdulaziz1928.builder.SieveUtils;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public class AbstractFlagAction extends SieveAction {
@@ -11,7 +11,7 @@ public class AbstractFlagAction extends SieveAction {
     private final String variableName;
 
     public AbstractFlagAction(String variableName, List<String> flags) {
-        this.flags = Objects.requireNonNull(flags, "flag-list is required");
+        this.flags = SieveUtils.requiredParamList(flags, "flag-list is required");
         this.variableName = variableName;
     }
 }
