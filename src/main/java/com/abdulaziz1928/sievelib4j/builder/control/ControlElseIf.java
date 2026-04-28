@@ -1,0 +1,21 @@
+package com.abdulaziz1928.sievelib4j.builder.control;
+
+import com.abdulaziz1928.sievelib4j.builder.SieveUtils;
+import com.abdulaziz1928.sievelib4j.builder.actions.SieveAction;
+import com.abdulaziz1928.sievelib4j.builder.conditions.SieveCondition;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.util.List;
+
+@Getter
+public final class ControlElseIf extends SieveControl {
+    private final SieveCondition condition;
+    private final List<SieveAction> actions;
+
+    @Builder
+    public ControlElseIf(SieveCondition condition, List<SieveAction> actions) {
+        this.condition = SieveUtils.requiredParam(condition, "condition is required");
+        this.actions = SieveUtils.requiredParamList(actions, "actions are required");
+    }
+}
